@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build on Linux
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p build
+          g++ -std=c++17 -O2 -Wall -Wextra bin/ghdeployer.cpp -o build/ghdeployer
+
+      - name: Build on macOS
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p build
+          clang++ -std=c++17 -O2 -Wall -Wextra bin/ghdeployer.cpp -o build/ghdeployer
+
+      - name: Build on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force build | Out-Null
+          cl /nologo /std:c++17 /EHsc /O2 bin/ghdeployer.cpp /Febuild/ghdeployer.exe
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ghdeployer-${{ runner.os }}
+          path: build/ghdeployer*
+          if-no-files-found: error
