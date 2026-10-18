@@ -2,7 +2,7 @@
 
 ![](icon.jpeg)
 
-### A fastweight auto GitHub deployer made with the C++ programming language.
+### A lightweight auto GitHub deployer made with the C++ programming language.
 ## You must have git downloaded on your PC.
 
 ## How to use?
