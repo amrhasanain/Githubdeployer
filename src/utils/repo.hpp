@@ -1,12 +1,14 @@
-#include <cstdlib>
-#include <filesystem>
+#pragma once
 #include <iostream>
-#include <string>
+#include "run.hpp"
+#include <filesystem>
 
-int run(const std::string& command) {
-    std::cout << "> " << command << '\n';
-    return std::system(command.c_str());
-}
+#ifdef _WIN32
+const char* nullDevice = "NUL";
+#else
+const char* nullDevice = "/dev/null";
+#endif
+
 
 bool repo(const std::string& name,
           const std::string& email,
@@ -38,8 +40,9 @@ bool repo(const std::string& name,
 
     if (run("git branch -M main") != 0) return false;
 
-    // On Windows, redirect the command output to NUL while checking origin.
-    int originExists = std::system("git remote get-url origin >NUL 2>&1");
+    std::string command =
+    std::string("git remote get-url origin >") + nullDevice + " 2>&1";
+    int originExists = std::system(command.c_str());
 
     if (originExists == 0) {
         if (run("git remote set-url origin \"" + link + "\"") != 0) {
@@ -52,17 +55,17 @@ bool repo(const std::string& name,
     }
 
     if (run("git push -u origin main") != 0) {
-        std::cerr << "Push failed. The GitHub repository may already contain commits.\n";
-        return false;
-    }
+        std::cerr << "Push failed. Trying to rebase on origin/main...\n";
 
-    return true;
+        if (run("git pull --rebase origin main") != 0) {
+            std::cerr << "Pull/rebase failed. Resolve conflicts, then try again.\n";
+            return false;
+        }
+        if (run("git push -u origin main") != 0) {
+            std::cerr << "Push failed again.\n";
+            return false;
+        }
 }
 
-int main() {
-    return repo(
-        "Amr",
-        "amrhasanain47@gmail.com",
-        "https://github.com/amrhasanain/test.git"
-    ) ? 0 : 1;
+    return true;
 }
