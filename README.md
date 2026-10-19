@@ -6,7 +6,7 @@
 ## You must have git downloaded on your PC.
 
 ## How to use?
-- Download ghdeployer and add it to the environment variables.
+- Download ghdeployer and add it to the PATH.
 - Test it:
 ```bash
 ghdeployer --version
