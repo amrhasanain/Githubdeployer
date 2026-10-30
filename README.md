@@ -17,7 +17,7 @@ ghdeployer --help
 ```
 - Use it:
 ```bash
-ghdeployer publish --name "Your name" --email "your github email" --repo <your repo link>
+ghdeployer publish --name "Your name" --email "your github email" --repo <your repo link.git>
 ```
 
 [![Download for Windows](https://img.shields.io/badge/Download%20for-Windows-blue?logo=windows&logoColor=white)](https://github.com/amrhasanain/Github-deployer/releases/download/Windows/ghdeployer-Windows.zip)
